@@ -15,6 +15,9 @@ function Screenshot(args) {
 			// TODO add option for string, rather than file
 			if(error && typeof config.callback === "function")
 				config.callback(error, null);
+			else if(!options.output){
+				config.callback(new Error('No image taken.', null))
+			}
 			else if(!error) {
 				if (typeof options.intermediate === "string") {
 					self.processImage(options.intermediate, options.output, options, function (error, success) {
@@ -41,10 +44,16 @@ function Screenshot(args) {
 }
 
 Screenshot.prototype.processImage = function(input, output, options, callback) {
+	if(!input){
+		return callback(new Error('No image to process.'))
+	}
 	if(typeof options.width !== "number" && typeof  options.height !== "number" && typeof options.quality !== "number") // no processing required
 		callback(null);
 	else {
 		new jimp(input, function (err, image) {
+			if(err){
+				callback(err)
+			}
 			if(typeof options.width === "number")
 				var resWidth = Math.floor(options.width);
 			if(typeof options.height === "number")
