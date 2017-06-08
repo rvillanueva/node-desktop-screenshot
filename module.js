@@ -52,7 +52,12 @@ Screenshot.prototype.processImage = function(input, output, options, callback) {
 	else {
 		new jimp(input, function (err, image) {
 			if(err){
-				callback(err)
+				callback(err);
+				return;
+			}
+			if(!image){
+				callback(new Error('No image received from jimp.'));
+				return;
 			}
 			if(typeof options.width === "number")
 				var resWidth = Math.floor(options.width);
@@ -74,6 +79,7 @@ Screenshot.prototype.processImage = function(input, output, options, callback) {
 			}
 			catch(error) {
 				callback(error);
+				return;
 			}
 		});
 	}
