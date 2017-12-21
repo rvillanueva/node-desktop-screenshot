@@ -65,6 +65,29 @@ describe('a png screenshot is taken', () => {
   })
 })
 
+describe('a png screenshot with resize options is taken', () => {
+  beforeEach(done => {
+    var args = {
+      '0': screenshotPath,
+      '1': {
+        width: 100,
+        height: 100
+      },
+      '2': function(err, complete){
+        if(err){
+          throw new Error(err);
+        }
+        done();
+      }
+    }
+    new Screenshot(args)
+  })
+  it('writes a file to the correct path', () => {
+    var exists = fs.existsSync(screenshotPath);
+    expect(exists).to.be.true;
+  })
+})
+
 describe('a jpeg screenshot is taken', () => {
   var screenshotJpegPath = path.join(tmpPath, 'screenshot.jpg');
   beforeEach(done => {

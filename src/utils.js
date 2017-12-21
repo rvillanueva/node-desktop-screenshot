@@ -1,4 +1,5 @@
 var path = require('path');
+var fs = require('fs');
 
 module.exports = {
   parseArgs: function(args){
@@ -28,5 +29,17 @@ module.exports = {
   		config.options.output = path.normalize(config.options.output);
 
   	return config;
+  },
+  deleteFile: function(path){
+    return new Promise((resolve, reject) => {
+      fs.unlink(path, err => {
+        if(err){
+          reject(err)
+          return;
+        }
+        resolve();
+      });
+    })
   }
+
 }
