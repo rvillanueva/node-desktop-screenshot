@@ -3,79 +3,60 @@ var jimp = require('jimp');
 var fs = require('fs');
 var ResponseHandler = require('./response');
 var Capturer = require('./capture');
+var utils = require('./utils');
 
-function Screenshot(args) {
-	var config = this.parseArgs(args);
-  var res = new ResponseHandler(config.callback);
-  var capturer = new Capturer();
-	var self = this;
-	capturer.take(config.options, function(error, options) {
-		// TODO add option for string, rather than file
-    res.send();
-		if(error)
-			res.error(error);
+class Screenshot {
+  constructor(args){
+    this.config = utils.parseArgs(args);
+    this.capturer = new Capturer();
+    this.res = new ResponseHandler(this.config.callback);
+    this.take()
+  }
+  take(){
+    this.capturer.take(this.config.options, (error, options) => {
+      // TODO add option for string, rather than file
+      if(error){
+        this.res.error(error);
+        return;
+      }
+      if(!options.output){
+        this.res.error(new Error("No image taken."));
+        return;
+      }
+      if (typeof options.intermediate === "string") {
+        this.handleIntermediateImage(options)
+      } else {
+        this.processImage(options.output, options.output, options, this.res);
+      }
+    });
+  }
+
+  processImage(input, output, options, res){
+  	if(!input){
+  		this.res.error(new Error('No image to process.'))
       return;
-    if(!options.output)
-			res.error(new Error("No image taken."));
-      return;
-		if (typeof options.intermediate === "string") {
-			self.processImage(options.intermediate, options.output, options, function (error, success) {
-				fs.unlink(options.intermediate, handleCallback); // delete intermediate
-			});
-		} else {
-      self.processImage(options.output, options.output, options, res);
+  	}
+  	if(typeof options.width !== "number" && typeof  options.height !== "number" && typeof options.quality !== "number") // no processing required
+  		this.res.send();
+  	else {
+  		new jimp(input, (err, image) => handleJimpResponse(err, image, this.res));
     }
-	});
+  };
 
-	function handleCallback(error, success) {
-		if(typeof config.callback === "function") {
-			if(typeof success === "undefined")
-				success = !error;
-			config.callback(error, success);
-		}
-	}
+  handleIntermediateImage(options){
+    // delete intermediate
+    this.processImage(options.intermediate, options.output, options, function (error, success) {
+      fs.unlink(options.intermediate, err => {
+        if(err){
+          this.res.error(err);
+          return;
+        }
+        this.res.send();
+      });
+    });
+  }
 }
 
-Screenshot.prototype.processImage = function(input, output, options, res) {
-	if(!input){
-		res.error(new Error('No image to process.'))
-    return;
-	}
-	if(typeof options.width !== "number" && typeof  options.height !== "number" && typeof options.quality !== "number") // no processing required
-		res.send();
-	else {
-		new jimp(input, (err, image) => handleJimpResponse(err, image, res));
-  }
-};
-
-Screenshot.prototype.parseArgs = function(args) {
-	var config = {options: {}};
-
-	for(var property in args) {
-		if (args.hasOwnProperty(property)) {
-			switch(typeof args[property]) {
-				case "string":
-					var file = args[property];
-					break;
-				case "function":
-					config.callback = args[property];
-					break;
-				case "object":
-					if(args[property] != null)
-						config.options = args[property];
-					break;
-			}
-		}
-	}
-
-	if(typeof file === "string")
-		config.options.output = file;
-
-	if(typeof config.options.output === "string")
-		config.options.output = path.normalize(config.options.output);
-
-	return config;
-};
 
 function handleJimpResponse(err, image, res){
   if(err){
