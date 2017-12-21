@@ -5,8 +5,11 @@ var fs = require('fs');
 module.exports = {
   createDirectory: function(dirPath){
     return new Promise((resolve, reject) => {
-      console.log(dirPath)
       fs.mkdir(dirPath, err => {
+        if(err){
+          reject(err);
+          return;
+        }
         resolve();
       })
     })

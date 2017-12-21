@@ -8,24 +8,16 @@ var main = require('../module');
 var testUtils = require('./utils');
 
 var sandbox = sinon.createSandbox();
-
-var Screenshot = rewire('../screenshot');
-var MockFs = require('./fs.mock');
+var Screenshot = rewire('../src/screenshot');
 
 var tmpPath = path.join(__dirname, '../tmp');
 var screenshotPath = path.join(tmpPath, 'screenshot.png');
-
-
-
-var mockFs = new MockFs();
-Screenshot.__set__('fs', mockFs);
-
 
 beforeEach(done => {
   testUtils.createDirectory(tmpPath)
   .then(() => {
     sandbox.reset();
-    done()
+    done();
   })
 })
 
@@ -41,7 +33,12 @@ after(done => {
 
 describe('when you call screenshot from the main module', () => {
   beforeEach(done => {
-    main(screenshotPath, (err, complete) => done());
+    main(screenshotPath, (err, complete) => {
+      if(err){
+        throw new Error(err);
+      }
+      done()
+    });
   })
   it('writes a screenshot', () => {
     var exists = fs.existsSync(screenshotPath);
@@ -63,10 +60,8 @@ describe('a png screenshot is taken', () => {
     new Screenshot(args)
   })
   it('writes a file to the correct path', () => {
-    it('writes a file to the correct path', () => {
-      var exists = fs.existsSync(screenshotPath);
-      expect(exists).to.be.true;
-    })
+    var exists = fs.existsSync(screenshotPath);
+    expect(exists).to.be.true;
   })
 })
 
@@ -85,9 +80,7 @@ describe('a jpeg screenshot is taken', () => {
     new Screenshot(args)
   })
   it('writes a file to the correct path', () => {
-    it('writes a file to the correct path', () => {
-      var exists = fs.existsSync(screenshotJpegPath);
-      expect(exists).to.be.true;
-    })
+    var exists = fs.existsSync(screenshotJpegPath);
+    expect(exists).to.be.true;
   })
 })
