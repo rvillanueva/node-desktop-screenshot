@@ -7,7 +7,12 @@ module.exports = function(options, callback) {
 	// when requesting JPG capture as PNG, so JIMP can read it
 	var ext = extension(options.output);
 	if(ext === "jpeg" || ext === "jpg") {
-		options.intermediate = path.resolve(path.join(__dirname, uniqueId() + ".png")); // create an intermediate file that can be processed, then deleted
+		try {
+			fs.mkdirSync(path.join(__dirname, '../tmp'));
+		} catch(e){
+
+		}
+		options.intermediate = path.resolve(path.join(__dirname, '../tmp', uniqueId() + ".png")); // create an intermediate file that can be processed, then deleted
 		capture(options.intermediate, callbackReturn);
 	}
 	else

@@ -11,9 +11,21 @@
     "type": "git",
     "url": "https://github.com/johnvmt/node-desktop-screenshot"
   },
-  "dependencies": {
-    "jimp": "0.2.x",
-    "flavored-path": "0.0.x"
+  "main": "module.js",
+  "scripts": {
+    "start": "node module.js",
+    "test": "mocha ./test/index.js",
+    "coverage": "nyc mocha ./test/index.js"
   },
-  "main": "module.js"
+  "dependencies": {
+    "flavored-path": "0.0.x",
+    "jimp": "0.2.x"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1",
+    "rewire": "^3.0.2",
+    "rimraf": "^2.6.2",
+    "sinon": "^4.1.3"
+  }
 }
