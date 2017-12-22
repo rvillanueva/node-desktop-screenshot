@@ -53,10 +53,14 @@ Install with `npm install desktop-screenshot`
             console.log("Screenshot succeeded");
     });
 
+## Tests ##
+
+Install test dependencies using `npm install -g mocha nyc`.
+
+Run `npm test` to run tests, `npm run coverage` for code coverage.
 
 ## TODOs ##
 
-- Tests
 - Multi-screen support
 - Cropping
 - Return contents of image, rather than writing file

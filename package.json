@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/johnvmt/node-desktop-screenshot"
+    "url": "https://github.com/schipiga/node-desktop-screenshot"
   },
   "main": "module.js",
   "scripts": {
@@ -22,7 +22,6 @@
   },
   "devDependencies": {
     "chai": "^4.1.2",
-    "mocha": "^4.0.1",
     "rewire": "^3.0.2",
     "rimraf": "^2.6.2",
     "sinon": "^4.1.3"
