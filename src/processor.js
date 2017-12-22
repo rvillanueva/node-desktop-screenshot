@@ -1,12 +1,16 @@
 var jimp = require('jimp');
 
-class ImageManipulator {
+class ImageProcessor {
   constructor(){
     this.image;
   }
   loadFile(filePath){
     return new Promise((resolve, reject) => {
-      this.image = new jimp(filePath, (err, image) => {
+      new jimp(filePath, (err, image) => {
+        if(!image){
+          reject(new Error('No image returned from Jimp.'));
+          return;
+        }
         this.image = image;
         resolve();
       })
@@ -43,4 +47,4 @@ class ImageManipulator {
   }
 }
 
-module.exports = ImageManipulator;
+module.exports = ImageProcessor;

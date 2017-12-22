@@ -1,9 +1,8 @@
-module.exports = function(writePath, callback) {
+var fs = require('fs');
+var childProcess = require('child_process');
+var path = require('path');
 
-	var fs = require('fs');
-	var childProcess = require('child_process');
-	var path = require('path');
-
+function capture(writePath, callback){
 	var scrot = childProcess.spawn(path.join(__dirname, "bin", "scrot", "scrot"), [writePath]);
 	scrot.on('close', function(code, signal) {
 		try {
@@ -14,4 +13,6 @@ module.exports = function(writePath, callback) {
 			callback("file_not_found", null);
 		}
 	});
-};
+}
+
+module.exports = capture;

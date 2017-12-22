@@ -37,12 +37,7 @@ after(done => {
 describe('when you call screenshot from the main module', () => {
   var screenshotPath = generateScreenshotPath('png');
   beforeEach(done => {
-    main(screenshotPath, (err, complete) => {
-      if(err){
-        throw new Error(err);
-      }
-      done()
-    });
+    main(screenshotPath, function(){done()});
   })
   it('writes a screenshot', () => {
     var exists = fs.existsSync(screenshotPath);
@@ -59,16 +54,8 @@ describe('a test finishes', () => {
 describe('a png screenshot is taken', () => {
   var screenshotPath = generateScreenshotPath('png');
   beforeEach(done => {
-    var args = {
-      '0': screenshotPath,
-      '1': function(err, complete){
-        if(err){
-          throw new Error(err);
-        }
-        done();
-      }
-    }
-    new Screenshot(args)
+    var args = [screenshotPath, function(){done()}];
+    new Screenshot(args);
   })
   it('writes a file to the correct path', () => {
     var exists = fs.existsSync(screenshotPath);
@@ -78,20 +65,12 @@ describe('a png screenshot is taken', () => {
 
 describe('a png screenshot with resize options is taken', () => {
   var screenshotPath = generateScreenshotPath('png');
+  var options = {
+    width: 100,
+    height: 100
+  }
   beforeEach(done => {
-    var args = {
-      '0': screenshotPath,
-      '1': {
-        width: 100,
-        height: 100
-      },
-      '2': function(err, complete){
-        if(err){
-          throw new Error(err);
-        }
-        done();
-      }
-    }
+    var args = [screenshotPath, options, function(){done()}];
     new Screenshot(args)
   })
   it('writes a file to the correct path', () => {
@@ -103,15 +82,7 @@ describe('a png screenshot with resize options is taken', () => {
 describe('a jpeg screenshot is taken', () => {
   var screenshotPath = generateScreenshotPath('jpg');
   beforeEach(done => {
-    var args = {
-      '0': screenshotPath,
-      '1': function(err, complete){
-        if(err){
-          throw new Error(err);
-        }
-        done();
-      }
-    }
+    var args = [screenshotPath, function(){done()}]
     new Screenshot(args)
   })
   it('writes a file to the correct path', () => {

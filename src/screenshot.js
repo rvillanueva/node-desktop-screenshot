@@ -2,21 +2,21 @@ var path = require('flavored-path');
 var fs = require('fs');
 var ResponseHandler = require('./response');
 var Capturer = require('./capture');
-var ImageManipulator = require('./manipulator');
+var ImageProcessor = require('./processor');
 var utils = require('./utils');
 
 class Screenshot {
   constructor(args){
     this.capturer = new Capturer();
-    this.imageManipulator = new ImageManipulator();
+    this.image = new ImageProcessor();
 
     var parsedArgs = utils.parseArgs(args);
     this.options = parsedArgs.options;
     this.callback = parsedArgs.callback;
-    this.writePath = this.options.output;
+    this.writePath = parsedArgs.writePath;
 
     this.res = new ResponseHandler(this.callback);
-    
+
     this.take()
   }
   async take(){
@@ -32,30 +32,17 @@ class Screenshot {
     }
   }
 
-  applyTransformationsIfNeeded(rawCapturePath, options){
-    return new Promise((resolve, reject) => {
-      if(noTransformationsNeeded(options)){
-        resolve();
-      } else {
-        this.imageManipulator.loadFile(rawCapturePath)
-        .then(data => {
-          this.imageManipulator.resize(options.width, options.height);
-          this.imageManipulator.changeQuality(options.quality);
-          this.imageManipulator.write(this.writePath);
-          resolve();
-        })
-        .catch(err => reject(err))
-      }
-    })
-  };
-
-  cleanupRawCaptureIfNeeded(rawCapturePath, outputPath){
-    if(rawCapturePath !== outputPath){
-      return utils.deleteFile(rawCapturePath)
+  async applyTransformationsIfNeeded(rawCapturePath, options){
+    if(noTransformationsNeeded(options)){
+      return;
     } else {
-      return Promise.resolve();
+      await this.image.loadFile(rawCapturePath)
+      this.image.resize(options.width, options.height);
+      this.image.changeQuality(options.quality);
+      this.image.write(this.writePath);
+      return
     }
-  }
+  };
 }
 
 function noTransformationsNeeded(options){
