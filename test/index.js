@@ -93,7 +93,7 @@ describe('a png screenshot with resize options is taken', () => {
     expect(finalSize.width === options.width).to.be.true;
     expect(finalSize.height === options.height).to.be.true;
   })
-})
+}).timeout(4000)
 
 describe('a jpeg screenshot is taken', () => {
   var screenshotPath = generateScreenshotPath('jpg');
