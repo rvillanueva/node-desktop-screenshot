@@ -6,6 +6,10 @@ Supports Windows (win32), OSX (darwin) and Linux platforms
 Windows version uses nircmd (http://nircmd.nirsoft.net)
 Linux version uses scrot
 
+## Install ##
+
+Install with `npm install desktop-screenshot`
+
 ## Available Options ##
 
 - quality: JPEG quality (0 to 100)
@@ -16,14 +20,14 @@ Linux version uses scrot
 
 ### Full resolution ###
 	var screenshot = require('desktop-screenshot');
-	
+
     screenshot("screenshot.png", function(error, complete) {
         if(error)
             console.log("Screenshot failed", error);
         else
             console.log("Screenshot succeeded");
     });
-    
+
 ### Resize to 400px wide, maintain aspect ratio ###
 
     var screenshot = require('desktop-screenshot');
@@ -34,7 +38,7 @@ Linux version uses scrot
         else
             console.log("Screenshot succeeded");
     });
-    
+
 ### Resize to 400x300, set JPG quality to 60% ###
 
     var screenshot = require('desktop-screenshot');
@@ -45,7 +49,8 @@ Linux version uses scrot
         else
             console.log("Screenshot succeeded");
     });
-    
+
+
 ## TODOs ##
 
 - Tests
