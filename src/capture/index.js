@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 class Capturer {
   constructor(){
     this.module;
@@ -10,6 +12,9 @@ class Capturer {
     this.init();
   }
   init(){
+    try{
+      fs.mkdirSync(path.join(__dirname, '../../tmp'))
+    } catch(e){}
     try {
       var moduleName = this.getModuleName();
       this.module = require("./" + moduleName);
