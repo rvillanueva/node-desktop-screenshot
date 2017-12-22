@@ -1,6 +1,7 @@
 var path = require('path');
 var rimraf = require('rimraf');
 var fs = require('fs');
+var Jimp = require('jimp');
 
 module.exports = {
   createDirectory: function(dirPath){
@@ -22,6 +23,18 @@ module.exports = {
       } else {
         reject(dirPath + ' is not an allowed path to clear.')
       }
+    })
+  },
+  getImageSizeFromPath: function(path){
+    return new Promise((resolve, reject) => {
+      Jimp.read(path)
+      .then(image => {
+        resolve({
+          width: image.bitmap.width,
+          height: image.bitmap.height
+        });
+      })
+      .catch(err => reject(err))
     })
   }
 }

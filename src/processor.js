@@ -1,4 +1,4 @@
-var jimp = require('jimp');
+var Jimp = require('jimp');
 
 class ImageProcessor {
   constructor(){
@@ -6,14 +6,12 @@ class ImageProcessor {
   }
   loadFile(filePath){
     return new Promise((resolve, reject) => {
-      new jimp(filePath, (err, image) => {
-        if(!image){
-          reject(new Error('No image returned from Jimp.'));
-          return;
-        }
+      Jimp.read(filePath)
+      .then(image => {
         this.image = image;
-        resolve();
+        resolve()
       })
+      .catch(err => reject(err))
     })
   }
   resize(width, height){
@@ -25,9 +23,9 @@ class ImageProcessor {
       newHeight = Math.floor(height);
     }
 
-    if(typeof newWidth === "number" && typeof resHeight !== "number") // resize to width, maintain aspect ratio
+    if(typeof newWidth === "number" && typeof newHeight !== "number") // resize to width, maintain aspect ratio
       newHeight = Math.floor(this.image.bitmap.height * (newWidth / this.image.bitmap.width));
-    else if(typeof resHeight === "number" && typeof resWidth !== "number") // resize to height, maintain aspect ratio
+    else if(typeof resHeight === "number" && typeof newH !== "number") // resize to height, maintain aspect ratio
       newWidth = Math.floor(this.image.bitmap.width * (newHeight / this.image.bitmap.height));
 
     this.image.resize(newWidth, newHeight)

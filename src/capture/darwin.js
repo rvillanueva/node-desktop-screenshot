@@ -15,10 +15,11 @@ function capture(writePath, callback) {
 	var captureChild = childProcess.spawn(cmd, args);
 
 	captureChild.on('close', function(error) {
-		if (error)
+		if (error){
 			callback(error.toString(), null);
-		else
-			callback(writePath);
+			return;
+		}
+		callback(null, writePath);
 	});
 
 	captureChild.stderr.on('data', function(data) {

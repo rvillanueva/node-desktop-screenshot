@@ -16,11 +16,10 @@ function parseArgs(args){
     parsed.callback = args['1'];
   } else if(typeof args['1'] === 'object') {
     parsed.options = args['1'];
-    if(typeof args['2'] === 'function'){
-      parsed.callback = args['2'];
-    }
   }
-
+  if(typeof args['2'] === 'function'){
+    parsed.callback = args['2'];
+  }
   return parsed;
 }
 

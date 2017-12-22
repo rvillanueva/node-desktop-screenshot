@@ -7,6 +7,7 @@ var path = require('path');
 var main = require('../module');
 var testUtils = require('./utils');
 
+var keepTests = false;
 var sandbox = sinon.createSandbox();
 var Screenshot = rewire('../src/screenshot');
 
@@ -25,6 +26,10 @@ beforeEach(done => {
 })
 
 afterEach(done => {
+  if(keepTests){
+    done();
+    return;
+  }
   testUtils.clearDirectory(tmpPath)
   .then(() => done())
 });
@@ -45,11 +50,13 @@ describe('when you call screenshot from the main module', () => {
   })
 })
 
-describe('a test finishes', () => {
-  it('properly clears the directory', () => {
-    expect(fs.readdirSync(tmpPath).length).to.equal(0);
+if(!keepTests){
+  describe('a test finishes', () => {
+    it('properly clears the directory', () => {
+      expect(fs.readdirSync(tmpPath).length).to.equal(0);
+    })
   })
-})
+}
 
 describe('a png screenshot is taken', () => {
   var screenshotPath = generateScreenshotPath('png');
@@ -69,13 +76,22 @@ describe('a png screenshot with resize options is taken', () => {
     width: 100,
     height: 100
   }
+  var finalSize;
   beforeEach(done => {
-    var args = [screenshotPath, options, function(){done()}];
+    var args = [screenshotPath, options, function(){
+      testUtils.getImageSizeFromPath(screenshotPath)
+      .then(size => {
+        finalSize = size;
+        done();
+      })
+    }];
     new Screenshot(args)
   })
-  it('writes a file to the correct path', () => {
+  it('writes a correctly sized file to the correct path', () => {
     var exists = fs.existsSync(screenshotPath);
     expect(exists).to.be.true;
+    expect(finalSize.width === options.width).to.be.true;
+    expect(finalSize.height === options.height).to.be.true;
   })
 })
 

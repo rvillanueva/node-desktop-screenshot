@@ -10,18 +10,20 @@ class Capturer {
       throw new Error('Module for platform ' + platform + ' could not be loaded.')
     }
   }
-  getRawCapture(writePath){
+  async getRawCapture(writePath){
     return new Promise((resolve, reject) => {
       this.module(writePath, (err, rawCapturePath) => {
         if(err){
-          reject(err);
+          reject(new Error(err));
           return;
         }
         if(!rawCapturePath){
-          reject(new Error('No raw capture path returned.'))
+          reject(new Error('No raw capture path returned.'));
+          return;
         }
         resolve(rawCapturePath);
       })
+
     })
   }
 }
