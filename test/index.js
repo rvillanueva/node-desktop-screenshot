@@ -83,6 +83,7 @@ describe('a png screenshot with resize options is taken', () => {
         finalSize = size;
         done();
       })
+      .catch(err => console.error(err))
     }];
     new Screenshot(args)
   })
