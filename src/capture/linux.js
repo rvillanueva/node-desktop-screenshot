@@ -3,7 +3,7 @@ var childProcess = require('child_process');
 var path = require('path');
 
 function capture(writePath, callback){
-	var scrot = childProcess.spawn("import", [ "-window", "root", writePath ]);
+	var scrot = childProcess.spawn("magick", [ "import", "-window", "root", writePath ]);
 	scrot.on('close', function(code, signal) {
 		try {
 			fs.statSync(writePath);

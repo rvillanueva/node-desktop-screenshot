@@ -35,25 +35,7 @@ function validateArgs(args){
   }
 }
 
-function deleteFile(path){
-  return new Promise((resolve, reject) => {
-    fs.unlink(path, err => {
-      if(err){
-        reject(err)
-        return;
-      }
-      resolve();
-    });
-  })
-}
-
-function getExtensionFromPath(path){
-    var split = path.split('.');
-    return split[split.length - 1];
-}
 
 module.exports = {
-  parseArgs: parseArgs,
-  deleteFile: deleteFile,
-  getExtensionFromPath: getExtensionFromPath
+  parseArgs: parseArgs
 }
