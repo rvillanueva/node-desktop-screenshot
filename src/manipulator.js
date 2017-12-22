@@ -3,9 +3,9 @@ var jimp = require('jimp');
 class ImageManipulator {
   constructor(){
   }
-  applyTransformationsAndWrite(input, options){
+  applyTransformationsAndWrite(filePath, options){
     return new Promise((resolve, reject) => {
-      new jimp(input, (err, image) => {
+      new jimp(filePath, (err, image) => {
         if(err){
           reject(err);
           return;
@@ -27,9 +27,9 @@ class ImageManipulator {
     }
 
     if(typeof newWidth === "number" && typeof resHeight !== "number") // resize to width, maintain aspect ratio
-      newHeight = Math.floor(this.image.bitmap.height * (newWidth / this.image.bitmap.width));
+      newHeight = Math.floor(image.bitmap.height * (newWidth / image.bitmap.width));
     else if(typeof resHeight === "number" && typeof resWidth !== "number") // resize to height, maintain aspect ratio
-      newWidth = Math.floor(this.image.bitmap.width * (newHeight / this.image.bitmap.height));
+      newWidth = Math.floor(image.bitmap.width * (newHeight / image.bitmap.height));
 
     image.resize(newWidth, newHeight)
   }

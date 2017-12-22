@@ -1,27 +1,27 @@
 var path = require('path');
 var fs = require('fs');
 
-module.exports = function(options, callback) {
+module.exports = function(writePath, callback) {
 	var childProcess = require('child_process');
 	// due to bug in jpgjs processing OSX jpg images https://github.com/notmasteryet/jpgjs/issues/34
 	// when requesting JPG capture as PNG, so JIMP can read it
-	var ext = extension(options.output);
+	var ext = extension(writePath);
+	var rawCapturePath = writePath;
 	if(ext === "jpeg" || ext === "jpg") {
 		try {
 			fs.mkdirSync(path.join(__dirname, '../../tmp'));
 		} catch(e){
 
 		}
-		options.intermediate = path.resolve(path.join(__dirname, '../../tmp', uniqueId() + ".png")); // create an intermediate file that can be processed, then deleted
-		capture(options.intermediate, callbackReturn);
+		rawCapturePath = path.resolve(path.join(__dirname, '../../tmp', uniqueId() + ".png")); // create an intermediate file that can be processed, then deleted
 	}
-	else
-		capture(options.output, callbackReturn); // when jpegjs bug fixed, only need this line
+
+	capture(writePath, callbackReturn); // when jpegjs bug fixed, only need this line
 
 	function callbackReturn(error, success) {
 		// called from capture
 		// callback with options, in case options added
-		callback(error, options);
+		callback(error, writePath);
 	}
 
 	function uniqueId() {
@@ -38,14 +38,14 @@ module.exports = function(options, callback) {
 		return path.extname(file).toLowerCase().substring(1);
 	}
 
-	function capture(output, callback) {
+	function capture(writePath, callback) {
 		var cmd = "screencapture";
 		var args = [
 			// will create PNG by default
 			"-t",
-			path.extname(output).toLowerCase().substring(1),
+			path.extname(writePath).toLowerCase().substring(1),
 			"-x",
-			output
+			writePath
 		];
 
 		var captureChild = childProcess.spawn(cmd, args);

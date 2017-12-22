@@ -11,7 +11,10 @@ var sandbox = sinon.createSandbox();
 var Screenshot = rewire('../src/screenshot');
 
 var tmpPath = path.join(__dirname, '../tmp');
-var screenshotPath = path.join(tmpPath, 'screenshot.png');
+
+function generateScreenshotPath(ext){
+  return path.join(tmpPath, 'screenshot-' + new Date().valueOf() + '.' + ext);
+}
 
 beforeEach(done => {
   testUtils.createDirectory(tmpPath)
@@ -32,6 +35,7 @@ after(done => {
 })
 
 describe('when you call screenshot from the main module', () => {
+  var screenshotPath = generateScreenshotPath('png');
   beforeEach(done => {
     main(screenshotPath, (err, complete) => {
       if(err){
@@ -46,7 +50,14 @@ describe('when you call screenshot from the main module', () => {
   })
 })
 
+describe('a test finishes', () => {
+  it('properly clears the directory', () => {
+    expect(fs.readdirSync(tmpPath).length).to.equal(0);
+  })
+})
+
 describe('a png screenshot is taken', () => {
+  var screenshotPath = generateScreenshotPath('png');
   beforeEach(done => {
     var args = {
       '0': screenshotPath,
@@ -66,6 +77,7 @@ describe('a png screenshot is taken', () => {
 })
 
 describe('a png screenshot with resize options is taken', () => {
+  var screenshotPath = generateScreenshotPath('png');
   beforeEach(done => {
     var args = {
       '0': screenshotPath,
@@ -89,10 +101,10 @@ describe('a png screenshot with resize options is taken', () => {
 })
 
 describe('a jpeg screenshot is taken', () => {
-  var screenshotJpegPath = path.join(tmpPath, 'screenshot.jpg');
+  var screenshotPath = generateScreenshotPath('jpg');
   beforeEach(done => {
     var args = {
-      '0': screenshotJpegPath,
+      '0': screenshotPath,
       '1': function(err, complete){
         if(err){
           throw new Error(err);
@@ -103,7 +115,7 @@ describe('a jpeg screenshot is taken', () => {
     new Screenshot(args)
   })
   it('writes a file to the correct path', () => {
-    var exists = fs.existsSync(screenshotJpegPath);
+    var exists = fs.existsSync(screenshotPath);
     expect(exists).to.be.true;
   })
 })

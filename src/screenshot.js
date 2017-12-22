@@ -7,51 +7,46 @@ var utils = require('./utils');
 
 class Screenshot {
   constructor(args){
-    this.config = utils.parseArgs(args);
+    var parsedArgs = utils.parseArgs(args);
+    this.options = parsedArgs.options;
+    this.callback = parsedArgs.callback;
+    this.writePath = this.options.output;
     this.capturer = new Capturer();
-    this.res = new ResponseHandler(this.config.callback);
+    this.res = new ResponseHandler(this.callback);
     this.imageManipulator = new ImageManipulator();
     this.take()
   }
-  take(){
-    this.capturer.take(this.config.options, (error, options) => {
-      // TODO add option for string, rather than file
-      if(error){
-        this.res.error(error);
-        return;
-      }
-      if(!options.output){
-        this.res.error(new Error("No image taken."));
-        return;
-      }
-      this.processImage(options.intermediate || options.input, options.output, options, this.res)
-      .then(() => this.handleIntermediateImageRemoval(options))
-      .then(data => this.res.send(data))
-      .catch(err => this.res.error(err))
-    });
+  async take(){
+    try {
+      var rawCapturePath = await this.capturer.getRawCapture(this.writePath)
+      this.processImage(rawCapturePath, this.options)
+      var data = await this.cleanupRawCapture(rawCapturePath, this.writePath)
+      this.res.send(data);
+      return;
+    } catch(e){
+      this.res.error(e);
+      return;
+    }
   }
 
-  processImage(input, output, options, res){
+  processImage(rawCapturePath, options){
     return new Promise((resolve, reject) => {
-      if(!input){
-        resolve(new Error('No image to process.'))
-        return;
-      }
       if(noTransformationsNeeded(options)){
         resolve();
       } else {
-        this.imageManipulator.applyTransformationsAndWrite(input, options)
+        this.imageManipulator.applyTransformationsAndWrite(rawCapturePath, options)
         .then(data => resolve(data))
         .catch(err => reject(err))
       }
     })
   };
 
-  handleIntermediateImageRemoval(options){
-    if(typeof options.intermediate !== 'string'){
+  cleanupRawCapture(rawCapturePath, outputPath){
+    if(rawCapturePath !== outputPath){
+      return utils.deleteFile(rawCapturePath)
+    } else {
       return Promise.resolve();
     }
-    return utils.deleteFile(options.intermediate)
   }
 }
 
