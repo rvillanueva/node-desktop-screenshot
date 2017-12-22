@@ -119,3 +119,7 @@ describe('a jpeg screenshot is taken', () => {
     expect(exists).to.be.true;
   })
 })
+
+process.on('unhandledRejection', err => {
+  console.error(err, err.trace);
+})

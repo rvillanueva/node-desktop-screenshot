@@ -7,21 +7,24 @@ var utils = require('./utils');
 
 class Screenshot {
   constructor(args){
+    this.capturer = new Capturer();
+    this.imageManipulator = new ImageManipulator();
+
     var parsedArgs = utils.parseArgs(args);
     this.options = parsedArgs.options;
     this.callback = parsedArgs.callback;
     this.writePath = this.options.output;
-    this.capturer = new Capturer();
+
     this.res = new ResponseHandler(this.callback);
-    this.imageManipulator = new ImageManipulator();
+    
     this.take()
   }
   async take(){
     try {
       var rawCapturePath = await this.capturer.getRawCapture(this.writePath)
-      this.processImage(rawCapturePath, this.options)
-      var data = await this.cleanupRawCapture(rawCapturePath, this.writePath)
-      this.res.send(data);
+      await this.applyTransformationsIfNeeded(rawCapturePath, this.options)
+      await this.cleanupRawCaptureIfNeeded(rawCapturePath, this.writePath);
+      this.res.send();
       return;
     } catch(e){
       this.res.error(e);
@@ -29,19 +32,24 @@ class Screenshot {
     }
   }
 
-  processImage(rawCapturePath, options){
+  applyTransformationsIfNeeded(rawCapturePath, options){
     return new Promise((resolve, reject) => {
       if(noTransformationsNeeded(options)){
         resolve();
       } else {
-        this.imageManipulator.applyTransformationsAndWrite(rawCapturePath, options)
-        .then(data => resolve(data))
+        this.imageManipulator.loadFile(rawCapturePath)
+        .then(data => {
+          this.imageManipulator.resize(options.width, options.height);
+          this.imageManipulator.changeQuality(options.quality);
+          this.imageManipulator.write(this.writePath);
+          resolve();
+        })
         .catch(err => reject(err))
       }
     })
   };
 
-  cleanupRawCapture(rawCapturePath, outputPath){
+  cleanupRawCaptureIfNeeded(rawCapturePath, outputPath){
     if(rawCapturePath !== outputPath){
       return utils.deleteFile(rawCapturePath)
     } else {
