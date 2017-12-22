@@ -1,4 +1,7 @@
 # node-desktop-screenshot #
+
+[![Coverage Status](https://coveralls.io/repos/github/rvillanueva/node-desktop-screenshot/badge.svg?branch=master)](https://coveralls.io/github/rvillanueva/node-desktop-screenshot?branch=master)
+
 Take a screenshot of the computer on which Node is running, using platform-specific external tools included with the package
 
 Supports Windows (win32), OSX (darwin) and Linux platforms
