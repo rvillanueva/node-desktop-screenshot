@@ -15,11 +15,10 @@
   "scripts": {
     "start": "node module.js",
     "test": "mocha ./test/index.js",
-    "coverage": "nyc mocha ./test/index.js"
+    "coverage": "nyc mocha ./test/index.js && nyc report --reporter=text-lcov | coveralls"
   },
   "dependencies": {
-    "flavored-path": "0.0.x",
-    "jimp": "0.2.x"
+    "jimp": "^0.2.28"
   },
   "devDependencies": {
     "chai": "^4.1.2",
