@@ -1,15 +1,17 @@
 var fs = require('fs');
 var childProcess = require('child_process');
 var path = require('path');
+var im = require('imagemagick');
 
 function capture(writePath, callback){
-	var scrot = childProcess.spawn("magick", [ "import", "-window", "root", writePath ]);
+	var scrot = childProcess.spawn("import", [ "-window", "root", writePath ]);
 	scrot.on('close', function(code, signal) {
 		try {
 			fs.statSync(writePath);
 			callback(null, writePath); // callback with options, in case options added
 		}
 		catch(error) {
+			console.error(error);
 			callback("file_not_found", null);
 		}
 	});
