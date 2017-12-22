@@ -1,7 +1,6 @@
 var fs = require('fs');
 var childProcess = require('child_process');
 var path = require('path');
-var im = require('imagemagick');
 
 function capture(writePath, callback){
 	var scrot = childProcess.spawn("import", [ "-window", "root", writePath ]);
