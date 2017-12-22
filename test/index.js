@@ -1,7 +1,6 @@
 var path = require('path');
 var sinon = require('sinon');
 var expect = require('chai').expect;
-var rewire = require('rewire');
 var fs = require('fs');
 var path = require('path');
 var main = require('../module');
@@ -9,7 +8,7 @@ var testUtils = require('./utils');
 
 var keepTests = false;
 var sandbox = sinon.createSandbox();
-var Screenshot = rewire('../src/screenshot');
+var Screenshot = require('../src/screenshot');
 
 var tmpPath = path.join(__dirname, '../tmp');
 
