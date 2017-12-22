@@ -7,7 +7,7 @@ class Capturer {
     try {
       this.module = require("./" + process.platform + ".js");
     } catch (e){
-      throw new Error('Module for platform ' + platform + ' could not be loaded.')
+      throw new Error('Module for platform ' + process.platform + ' could not be loaded.')
     }
   }
   async getRawCapture(writePath){
